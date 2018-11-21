@@ -25,8 +25,12 @@ repositories {
 
 
 dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.xerial:sqlite-jdbc:3.25.2')
     implementation('org.hibernate:hibernate-core:5.3.7.Final')
+    implementation('org.xerial:sqlite-jdbc:3.25.2')
+    implementation('com.zsoltfabok:sqlite-dialect:1.0')
+    
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 }
