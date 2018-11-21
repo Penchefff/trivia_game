@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class JsonQuestion {
 
-    private int id;
+    private Long id;
 
     private String question;
 

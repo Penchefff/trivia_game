@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class JsonAnswer {
 
-    private int id;
+    private Long id;
 
     private String answer;
 }
