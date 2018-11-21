@@ -22,25 +22,16 @@ public class TriviaController {
 
     @GetMapping
     public ResponseEntity<List<JsonQuestion>> getQuestions() {
-//        JsonAnswer answer1 = JsonAnswer.builder().id(1).answer("Answer 1").build();
-//        JsonAnswer answer2 = JsonAnswer.builder().id(2).answer("Answer 2").build();
-//        JsonAnswer answer3 = JsonAnswer.builder().id(3).answer("Answer 3").build();
-//        JsonQuestion question1 = JsonQuestion.builder()
-//            .id(1)
-//            .question("Question 1")
-//            .answers(ImmutableList.of(answer1, answer2, answer3))
-//            .correctAnswerId(2)
-//            .build();
-
-//        return new ResponseEntity<>(ImmutableList.of(question1), HttpStatus.OK);
         return new ResponseEntity<>(service.getAllQuestions()
             .stream()
             .map(q -> JsonQuestion.builder()
                 .id(q.getId())
                 .question(q.getText())
-                .answers(q.getAnswers().stream().map(a -> JsonAnswer.builder()
-                    .id(a.getId())
-                    .answer(a.getText()).build())
+                .correctAnswerId(q.getCorrectAnswerId())
+                .answers(q.getAnswers().stream()
+                    .map(a -> JsonAnswer.builder()
+                        .id(a.getId())
+                        .answer(a.getText()).build())
                     .collect(Collectors.toList()))
                 .build())
             .collect(Collectors.toList()), HttpStatus.OK);

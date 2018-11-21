@@ -1,8 +1,12 @@
 package com.scrummy.rest.models;
 
-import javax.persistence.*;
 import java.util.List;
-import lombok.Builder;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +25,6 @@ public class Question {
     @OneToMany(mappedBy = "question")
     private List<Answer> answers;
 
+    @Column(name = "ANSWER")
+    private Long correctAnswerId;
 }
