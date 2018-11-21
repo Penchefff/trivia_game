@@ -31,6 +31,9 @@ dependencies {
     implementation('org.hibernate:hibernate-core:5.3.7.Final')
     implementation('org.xerial:sqlite-jdbc:3.25.2')
     implementation('com.zsoltfabok:sqlite-dialect:1.0')
-    
+    implementation('com.google.guava:guava:27.0-jre')
+
+    compileOnly("org.projectlombok:lombok:1.18.2")
+
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 }

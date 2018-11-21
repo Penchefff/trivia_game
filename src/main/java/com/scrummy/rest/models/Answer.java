@@ -10,9 +10,8 @@ public class Answer {
     @GeneratedValue
     private Long id;
 
+    @Column(name = "TEXT")
     private String text;
-
-    private String questionId;
 
     @ManyToOne
     @JoinColumn(name="QUESTION_ID")
