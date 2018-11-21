@@ -13,11 +13,11 @@ public class RestApplication {
 		SpringApplication.run(RestApplication.class, args);
 	}
 
-//	@Bean
-//	public DataSource dataSource() {
-//		DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-//		dataSourceBuilder.driverClassName("org.sqlite.JDBC");
-//		dataSourceBuilder.url("jdbc:sqlite:your.db");
-//		return dataSourceBuilder.build();
-//	}
+	@Bean
+	public DataSource dataSource() {
+		DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+		dataSourceBuilder.driverClassName("org.sqlite.JDBC");
+		dataSourceBuilder.url("jdbc:sqlite:db_trivia_game.db");
+		return dataSourceBuilder.build();
+	}
 }
