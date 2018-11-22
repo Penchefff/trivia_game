@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +16,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "QUESTIONS")
 @Data
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Question {
 
     @Id
