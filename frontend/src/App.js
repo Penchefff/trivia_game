@@ -50,13 +50,20 @@ const Container = styled('section')`
   margin: 0 auto;
 `;
 
+const GAME_STATES = {
+  INITIAL: 'initial',
+  IN_PROGRESS: 'in_progress',
+  FINISHED: 'finished'
+};
+
 class App extends Component {
   state = {
     questions: [],
-    username: null,
+    username: '',
     currentQuestion: null,
     score: 0,
-    totalQuestions: 0
+    totalQuestions: 0,
+    gameState: GAME_STATES.INITIAL
   };
 
   async componentDidMount() {
@@ -75,33 +82,67 @@ class App extends Component {
       if (!questions.length) {
         return {
           currentQuestion: null,
+          answeredQuestionId: null,
           questions: [],
           disabled: false,
-          finished: true
+          gameState: GAME_STATES.FINISHED
         };
       }
 
       const [nextQuestion, ...remainingQuestions] = questions;
       return {
         currentQuestion: nextQuestion,
+        answeredQuestionId: null,
         questions: remainingQuestions,
         disabled: false
       };
     });
   };
 
+  handleChangeUsername = e => {
+    e.preventDefault();
+    this.setState({ username: e.target.value });
+  };
+
   handleSubmitQuestion = submittedQuestionId => {
     const { currentQuestion } = this.state;
-    const isCorrectAnswer = currentQuestion.id === submittedQuestionId;
+    const isCorrectAnswer =
+      currentQuestion.correctAnswerId === submittedQuestionId;
 
     this.setState(prevState => ({
       score: isCorrectAnswer ? prevState.score + 1 : prevState.score,
-      disabled: true
+      disabled: true,
+      answeredQuestionId: submittedQuestionId
     }));
   };
 
-  handleSubmitUsername = username => {
-    this.setState({ username });
+  getButtonText = () => {
+    const { gameState } = this.state;
+
+    const buttonText = {
+      [GAME_STATES.INITIAL]: 'Start',
+      [GAME_STATES.IN_PROGRESS]: 'Next',
+      [GAME_STATES.FINISHED]: 'Start over'
+    };
+
+    return buttonText[gameState];
+  };
+
+  handleButtonClicked = e => {
+    e.preventDefault();
+    const { gameState } = this.state;
+    if (gameState === GAME_STATES.IN_PROGRESS) {
+      this.handleNextQuestion();
+    } else if (gameState === GAME_STATES.INITIAL) {
+      this.setState({ gameState: GAME_STATES.IN_PROGRESS });
+    } else if (gameState === GAME_STATES.FINISHED) {
+      this.setState({ gameState: GAME_STATES.INITIAL, score: 0 });
+    }
+  };
+
+  isButtonDisabled = () => {
+    const { gameState, answeredQuestionId } = this.state;
+    return gameState === GAME_STATES.IN_PROGRESS && !answeredQuestionId;
   };
 
   render() {
@@ -109,42 +150,43 @@ class App extends Component {
       currentQuestion,
       disabled,
       score,
-      finished,
       answeredQuestionId,
-      username
+      totalQuestions,
+      username,
+      gameState
     } = this.state;
-
-    if (!currentQuestion && !finished) {
-      return null;
-    }
 
     let body;
 
-    if(finished ) {
-      body = <Card>
-        <Text>
-          You answered {score} of {this.totalQuestions} questions correctly.
-        </Text>
-      </Card>
+    if (gameState === GAME_STATES.FINISHED) {
+      body = (
+        <Card>
+          <Text>
+            You answered {score} of {totalQuestions} questions correctly.
+          </Text>
+        </Card>
+      );
     }
 
-
-    if(username && !finished) {
-    body = (
-      <QuestionCard
-        {...currentQuestion}
-        answeredQuestionId={answeredQuestionId}
-        onSubmit={this.handleSubmitQuestion}
-        disabled={disabled}
-        username={username}
-      />
-    )
+    if (gameState === GAME_STATES.IN_PROGRESS) {
+      body = (
+        <QuestionCard
+          {...currentQuestion}
+          answeredQuestionId={answeredQuestionId}
+          onSubmit={this.handleSubmitQuestion}
+          disabled={disabled}
+          username={username}
+        />
+      );
     }
 
-    if (!body) {
-(
- body =      <WelcomeScreen onSubmit={this.handleSubmitUsername} />
-    )
+    if (!body || gameState === GAME_STATES.INITIAL) {
+      body = (
+        <WelcomeScreen
+          onChangeUsername={this.handleChangeUsername}
+          username={username}
+        />
+      );
     }
 
     return (
@@ -152,8 +194,13 @@ class App extends Component {
         <Container>
           <Title />
           <Spacing bottom>{body}</Spacing>
-          <Button disabled={!disabled} primary onClick={this.handleNextQuestion}>
-            {finished ? 'Finish' : 'Next'}
+          <Button
+            type="button"
+            primary
+            disabled={this.isButtonDisabled()}
+            onClick={this.handleButtonClicked}
+          >
+            {this.getButtonText()}
           </Button>
         </Container>
       </ThemeProvider>

@@ -1,35 +1,40 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Input, Button, Heading, Card } from '@sumup/circuit-ui'
-
-var username = '';
-
-function usernameChanged(e) {
-    username = e.target.value;
-}
+import { Input, Heading, Card } from '@sumup/circuit-ui';
 
 /**
  * Describe WelcomeScreen here.
  */
-const WelcomeScreen = ({ onSubmit }) => (
-    <Card>
-        <form>
-            <Heading align="center">Nice to have you here, how about you tell me who you are?</Heading>
-            <Input onChange={ usernameChanged }></Input>
-            <Button onClick={() => onSubmit(username) }>Go to the questions</Button>
-        </form>
-    </Card>
-);
+class WelcomeScreen extends Component {
+  static propTypes = {
+    onChangeUsername: PropTypes.func,
+    username: PropTypes.string
+  };
 
-WelcomeScreen.propTypes = {
-  /**
-   * A consice description of the example prop.
-   */
-  example: PropTypes.string
-};
+  static defaultProps = {
+    onChangeUsername: e => {
+      e.preventDefault();
+    },
+    username: ''
+  };
 
-WelcomeScreen.defaultProps = {};
-
+  render() {
+    return (
+      <Card>
+        <Heading align="center">
+          Nice to have you here, how about you tell me who you are?
+        </Heading>
+        <Input
+          name="username"
+          autoComplete="off"
+          type="text"
+          onChange={this.props.onChangeUsername}
+          value={this.props.username}
+        />
+      </Card>
+    );
+  }
+}
 /**
  * @component
  */

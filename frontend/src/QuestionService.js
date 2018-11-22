@@ -1,6 +1,6 @@
 import faker from 'faker';
 
-const generateFakeQuestions = (n = 10) =>
+const generateFakeQuestions = (n = 3) =>
   Array.from(Array(n).keys()).map(() => {
     const answers = Array.from(Array(4).keys()).map(() => ({
       id: faker.random.uuid(),
@@ -14,10 +14,16 @@ const generateFakeQuestions = (n = 10) =>
     };
   });
 
-export const fetchQuestions = async (numberOfQuestions) => {
+const mapQuestion = ({ correct_answer_id: correctAnswerId, ...rest }) => ({
+  ...rest,
+  correctAnswerId
+})
+
+export const fetchQuestions = async () => {
   const URL = 'http://192.168.14.235:8080/questions';
 
-  return generateFakeQuestions(numberOfQuestions);
+  const questions = await generateFakeQuestions();
+  return questions.map(mapQuestion);
 
   // try {
   //   const data = await fetch(URL);

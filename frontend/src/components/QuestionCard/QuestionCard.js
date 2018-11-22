@@ -35,6 +35,7 @@ const QuestionCard = ({
   onSubmit,
   username,
   disabled,
+  answeredQuestionId,
   correctAnswerId
 }) => (
   <Fragment>
@@ -51,12 +52,12 @@ const QuestionCard = ({
                 width: 100%;
               `}
               text={answer}
-              isIncorrect={correctAnswerId && correctAnswerId !== id}
-              isCorrect={correctAnswerId && correctAnswerId === id}
               disabled={disabled}
               onClick={() => {
                 onSubmit(id);
               }}
+              isIncorrect={answeredQuestionId && id !== correctAnswerId}
+              isCorrect={answeredQuestionId && id === correctAnswerId}
             />
           </AnswerWrapper>
         ))}
@@ -74,7 +75,8 @@ QuestionCard.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
   username: PropTypes.string,
-  correctAnswerId: PropTypes.string
+  correctAnswerId: PropTypes.string,
+  answeredQuestionId: PropTypes.string
 };
 
 QuestionCard.defaultProps = {
