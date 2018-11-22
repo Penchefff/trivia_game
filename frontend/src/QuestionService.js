@@ -19,18 +19,23 @@ const mapQuestion = ({ correct_answer_id: correctAnswerId, ...rest }) => ({
   correctAnswerId
 })
 
+const defaultOptions = {
+  headers: {
+    'Content-Type': 'application/json; charset=utf-8'
+    // "Content-Type": "application/x-www-form-urlencoded",
+  },
+  cache: 'no-cache'
+};
+
 export const fetchQuestions = async () => {
-  const URL = 'http://192.168.14.235:8080/questions';
+  const URL = 'http://localhost:8080/questions';
 
-  const questions = await generateFakeQuestions();
-  return questions.map(mapQuestion);
-
-  // try {
-  //   const data = await fetch(URL);
-  //   return await data.json();
-  //   // return await generateFakeQuestions(numberOfQuestions);
-  // } catch (err) {
-  //   console.error(err);
-  //   return [];
-  // }
+  try {
+    const data = await fetch(URL, defaultOptions);
+    const questions = await data.json();
+    return questions.map(mapQuestion)
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
 };

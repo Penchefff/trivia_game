@@ -11,7 +11,7 @@ import {
 } from '@sumup/circuit-ui';
 
 import { fetchQuestions } from './QuestionService';
-import { fetchUsers } from './UserService';
+import { fetchUsers, submitScore } from './UserService';
 import QuestionCard from './components/QuestionCard';
 import WelcomeScreen from './components/WelcomeScreen';
 import Title from './components/Title';
@@ -68,30 +68,33 @@ class App extends Component {
   };
 
   async componentDidMount() {
-    this.resetData();
+    const data = await this.fetchData();
+    this.setState({...data})
   }
 
-  resetData = async () => {
+  fetchData = async () => {
     const [users, [currentQuestion, ...questions]] = await Promise.all([
       fetchUsers(),
       fetchQuestions(this.totalQuestions)
     ]);
 
-    this.setState({
+    return {
       users,
       currentQuestion,
       questions,
       totalQuestions: questions.length + 1
-    });
+    };
   };
 
   handleNextQuestion = () => {
-    this.setState(({ questions }) => {
+    this.setState(({ questions, score, username }) => {
       if (!questions.length) {
+        submitScore({score, username});
         return {
           currentQuestion: null,
           answeredQuestionId: null,
           questions: [],
+          users: [],
           disabled: false,
           gameState: GAME_STATES.FINISHED
         };
