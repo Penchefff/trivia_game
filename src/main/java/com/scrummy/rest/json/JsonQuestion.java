@@ -20,5 +20,5 @@ public class JsonQuestion {
     private List<JsonAnswer> answers;
 
     @JsonProperty("correct_answer_id")
-    private int correctAnswerId;
+    private Long correctAnswerId;
 }
