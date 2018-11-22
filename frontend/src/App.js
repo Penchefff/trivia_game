@@ -1,9 +1,16 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import styled from 'react-emotion/macro';
-import { css } from 'emotion/macro';
 import { ThemeProvider } from 'emotion-theming';
-import { theme as themes, injectGlobalStyles } from '@sumup/circuit-ui';
+import {
+  theme as themes,
+  injectGlobalStyles,
+  Text,
+  Card as BaseCard,
+  Button,
+  Spacing
+} from '@sumup/circuit-ui';
 
+import { fetchQuestions } from './QuestionService';
 import QuestionCard from './components/QuestionCard';
 import WelcomeScreen from './components/WelcomeScreen';
 import Title from './components/Title';
@@ -26,6 +33,12 @@ injectGlobalStyles({
   `
 });
 
+const Card = styled(BaseCard)`
+  width: 50vw;
+  min-height: 50vh;
+  justify-content: flex-start;
+`;
+
 const Container = styled('section')`
   display: flex;
   flex-direction: column;
@@ -37,64 +50,111 @@ const Container = styled('section')`
   margin: 0 auto;
 `;
 
-const question = {
-  id: 'foobar',
-  question: 'How old are you?',
-  answers: [
-    {
-      id: 1,
-      answer: '1'
-    },
-    {
-      id: 2,
-      answer: '2'
-    },
-    {
-      id: 3,
-      answer: '3'
-    },
-    {
-      id: 4,
-      answer: '4'
-    }
-  ],
-  correctAnswerId: 1
-};
-
 class App extends Component {
   state = {
     questions: [],
-    currentQuestion: question,
-    username: null
+    username: null,
+    currentQuestion: null,
+    score: 0,
+    totalQuestions: 0
   };
 
-  componentDidMount() {
-    Promise.resolve([question]).then(([ currentQuestion, ...questions]) => {
-      this.setState({ questions, currentQuestion })
-    })
+  async componentDidMount() {
+    const [currentQuestion, ...questions] = await fetchQuestions(
+      this.totalQuestions
+    );
+    this.setState({
+      questions,
+      currentQuestion,
+      totalQuestions: questions.length + 1
+    });
   }
 
-  RenderPage() {
-    const { currentQuestion, username } = this.state;
+  handleNextQuestion = () => {
+    this.setState(({ questions }) => {
+      if (!questions.length) {
+        return {
+          currentQuestion: null,
+          questions: [],
+          disabled: false,
+          finished: true
+        };
+      }
 
-    if (!username) {
-        return <WelcomeScreen onSubmit={ this.SetUsername.bind(this) } />
-    } else if (currentQuestion) {
-        currentQuestion.username = username;
-        return <QuestionCard {...currentQuestion} />
-    }
-  }
+      const [nextQuestion, ...remainingQuestions] = questions;
+      return {
+        currentQuestion: nextQuestion,
+        questions: remainingQuestions,
+        disabled: false
+      };
+    });
+  };
 
-  SetUsername(username) {
-    this.setState({ username: username });
-  }
+  handleSubmitQuestion = submittedQuestionId => {
+    const { currentQuestion } = this.state;
+    const isCorrectAnswer = currentQuestion.id === submittedQuestionId;
+
+    this.setState(prevState => ({
+      score: isCorrectAnswer ? prevState.score + 1 : prevState.score,
+      disabled: true
+    }));
+  };
+
+  handleSubmitUsername = username => {
+    this.setState({ username });
+  };
 
   render() {
+    const {
+      currentQuestion,
+      disabled,
+      score,
+      finished,
+      answeredQuestionId,
+      username
+    } = this.state;
+
+    if (!currentQuestion && !finished) {
+      return null;
+    }
+
+    let body;
+
+    if(finished ) {
+      body = <Card>
+        <Text>
+          You answered {score} of {this.totalQuestions} questions correctly.
+        </Text>
+      </Card>
+    }
+
+
+    if(username && !finished) {
+    body = (
+      <QuestionCard
+        {...currentQuestion}
+        answeredQuestionId={answeredQuestionId}
+        onSubmit={this.handleSubmitQuestion}
+        disabled={disabled}
+        username={username}
+      />
+    )
+    }
+
+    if (!body) {
+(
+ body =      <WelcomeScreen onSubmit={this.handleSubmitUsername} />
+    )
+    }
+
     return (
       <ThemeProvider theme={circuit}>
         <Container>
           <Title />
-            { this.RenderPage() }
+          <Spacing bottom>{body}</Spacing>
+          <Button disabled={!disabled} primary onClick={this.handleNextQuestion}>
+            {finished ? 'Finish' : 'Next'}
+          </Button>
         </Container>
       </ThemeProvider>
     );
