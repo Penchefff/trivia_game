@@ -1,6 +1,5 @@
 package com.scrummy.rest.controllers;
 
-import com.google.common.collect.ImmutableList;
 import com.scrummy.rest.json.JsonAnswer;
 import com.scrummy.rest.json.JsonQuestion;
 import com.scrummy.rest.services.TriviaService;
