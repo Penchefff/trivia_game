@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import styled from 'react-emotion/macro';
 import { ThemeProvider } from 'emotion-theming';
-import { theme as themes, injectGlobalStyles } from '@sumup/circuit-ui';
+import {
+  theme as themes,
+  injectGlobalStyles,
+  Text,
+  Card as BaseCard
+} from '@sumup/circuit-ui';
 
 import { fetchQuestions } from './QuestionService';
 import QuestionCard from './components/QuestionCard';
@@ -26,6 +31,12 @@ injectGlobalStyles({
   `
 });
 
+const Card = styled(BaseCard)`
+  width: 50vw;
+  min-height: 50vh;
+  justify-content: flex-start;
+`;
+
 const Container = styled('section')`
   display: flex;
   flex-direction: column;
@@ -42,23 +53,29 @@ class App extends Component {
     questions: [],
     username: null,
     currentQuestion: null,
-    score: 0
+    score: 0,
+    totalQuestions: 0
   };
 
   async componentDidMount() {
-    const [currentQuestion, ...questions] = await fetchQuestions();
-    this.setState({ questions, currentQuestion });
+    const [currentQuestion, ...questions] = await fetchQuestions(
+      this.totalQuestions
+    );
+    this.setState({
+      questions,
+      currentQuestion,
+      totalQuestions: questions.length + 1
+    });
   }
 
   handleSubmitQuestion = submittedQuestionId => {
     const { currentQuestion } = this.state;
-    if (currentQuestion.id === submittedQuestionId) {
-      this.setState(prevState => ({
-        score: prevState.score + 1,
-        submittedQuestionId,
-        disabled: true
-      }));
-    }
+    const isCorrectAnswer = currentQuestion.id === submittedQuestionId;
+
+    this.setState(prevState => ({
+      score: isCorrectAnswer ? prevState.score + 1 : prevState.score,
+      disabled: true
+    }));
 
     setTimeout(() => {
       this.setState(({ questions }) => {
@@ -66,8 +83,8 @@ class App extends Component {
           return {
             currentQuestion: null,
             questions: [],
-            finished: true,
-            submittedQuestionId: null
+            disabled: false,
+            finished: true
           };
         }
 
@@ -75,11 +92,10 @@ class App extends Component {
         return {
           currentQuestion: nextQuestion,
           questions: remainingQuestions,
-          disabled: false,
-          submittedQuestionId: null
+          disabled: false
         };
       });
-    }, 500);
+    }, 1000);
   };
 
   handleSubmitUsername = username => {
@@ -96,11 +112,23 @@ class App extends Component {
       username
     } = this.state;
 
-    if (finished) {
-      return <Title>{score}</Title>;
+    if (!currentQuestion && !finished) {
+      return null;
     }
 
-    const body = username ? (
+    let body;
+
+    if(finished ) {
+      body = <Card>
+        <Text>
+          You answered {score} of {this.totalQuestions} questions correctly.
+        </Text>
+      </Card>
+    }
+
+
+    if(username && !finished) {
+    body = (
       <QuestionCard
         {...currentQuestion}
         answeredQuestionId={answeredQuestionId}
@@ -108,9 +136,14 @@ class App extends Component {
         disabled={disabled}
         username={username}
       />
-    ) : (
-      <WelcomeScreen onSubmit={this.handleSubmitUsername} />
-    );
+    )
+    }
+
+    if (!body) {
+(
+ body =      <WelcomeScreen onSubmit={this.handleSubmitUsername} />
+    )
+    }
 
     return (
       <ThemeProvider theme={circuit}>

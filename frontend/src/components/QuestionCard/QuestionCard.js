@@ -34,7 +34,8 @@ const QuestionCard = ({
   answers,
   onSubmit,
   username,
-  disabled
+  disabled,
+  correctAnswerId
 }) => (
   <Card>
     <Heading size={Heading.MEGA}>Lets do this, {username}</Heading>
@@ -49,6 +50,8 @@ const QuestionCard = ({
               width: 100%;
             `}
             text={answer}
+            isIncorrect={correctAnswerId && correctAnswerId !== id}
+            isCorrect={correctAnswerId && correctAnswerId === id}
             disabled={disabled}
             onClick={() => {
               onSubmit(id);
@@ -68,12 +71,14 @@ QuestionCard.propTypes = {
   answers: PropTypes.array.isRequired,
   onSubmit: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
-  username: PropTypes.string
+  username: PropTypes.string,
+  correctAnswerId: PropTypes.string
 };
 
 QuestionCard.defaultProps = {
   disabled: false,
-  username: ''
+  username: '',
+  correctAnswerId: ''
 };
 
 /**

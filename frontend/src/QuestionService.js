@@ -14,13 +14,13 @@ const generateFakeQuestions = (n = 10) =>
     };
   });
 
-export const fetchQuestions = async () => {
+export const fetchQuestions = async (numberOfQuestions) => {
   const URL = 'http://192.168.14.235:8080/questions';
 
   try {
-    // const data = await fetch(URL);
-    // return await data.json();
-    return await generateFakeQuestions();
+    const data = await fetch(URL);
+    return await data.json();
+    // return await generateFakeQuestions(numberOfQuestions);
   } catch (err) {
     console.error(err);
     return [];
