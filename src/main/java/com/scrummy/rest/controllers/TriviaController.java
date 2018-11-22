@@ -3,6 +3,7 @@ package com.scrummy.rest.controllers;
 import com.scrummy.rest.json.JsonAnswer;
 import com.scrummy.rest.json.JsonQuestion;
 import com.scrummy.rest.services.TriviaService;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class TriviaController {
     @CrossOrigin(origins = "*")
     @GetMapping
     public ResponseEntity<List<JsonQuestion>> getQuestions() {
-        return new ResponseEntity<>(service.getAllQuestions()
+        List<JsonQuestion> result = service.getAllQuestions()
             .stream()
             .map(q -> JsonQuestion.builder()
                 .id(q.getId())
@@ -35,6 +36,9 @@ public class TriviaController {
                         .answer(a.getText()).build())
                     .collect(Collectors.toList()))
                 .build())
-            .collect(Collectors.toList()), HttpStatus.OK);
+            .collect(Collectors.toList());
+        result.forEach(q -> Collections.shuffle(q.getAnswers()));
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
