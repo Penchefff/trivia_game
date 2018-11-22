@@ -5,18 +5,27 @@ import PropTypes from 'prop-types';
 import { Button as BaseButton } from '@sumup/circuit-ui';
 
 const correctStyles = ({ theme, isCorrect, disabled }) =>
-  isCorrect && disabled &&
+  isCorrect &&
+  disabled &&
   css`
     background-color: ${theme.colors.success};
   `;
 
 const incorrectStyles = ({ theme, isIncorrect, disabled }) =>
-  isIncorrect && disabled &&
+  isIncorrect &&
+  disabled &&
   css`
     background-color: ${theme.colors.danger};
   `;
 
-const Button = styled(BaseButton)(correctStyles, incorrectStyles);
+const baseStyles = ({ theme }) => css`
+  &:disabled {
+    color: ${theme.colors.white};
+    opacity: 1;
+  }
+`;
+
+const Button = styled(BaseButton)(baseStyles, correctStyles, incorrectStyles);
 
 /**
  * Describe Answer here.

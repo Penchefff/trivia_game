@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Card as BaseCard, Spacing, Heading } from '@sumup/circuit-ui';
 import styled, { css } from 'react-emotion';
@@ -37,30 +37,32 @@ const QuestionCard = ({
   disabled,
   correctAnswerId
 }) => (
-  <Card>
+  <Fragment>
     <Heading size={Heading.MEGA}>Lets do this, {username}</Heading>
-    <Spacing bottom>
-      <Question text={text} />
-    </Spacing>
-    <AnswerList>
-      {answers.map(({ answer, id }) => (
-        <AnswerWrapper key={id}>
-          <Answer
-            className={css`
-              width: 100%;
-            `}
-            text={answer}
-            isIncorrect={correctAnswerId && correctAnswerId !== id}
-            isCorrect={correctAnswerId && correctAnswerId === id}
-            disabled={disabled}
-            onClick={() => {
-              onSubmit(id);
-            }}
-          />
-        </AnswerWrapper>
-      ))}
-    </AnswerList>
-  </Card>
+    <Card>
+      <Spacing bottom>
+        <Question text={text} />
+      </Spacing>
+      <AnswerList>
+        {answers.map(({ answer, id }) => (
+          <AnswerWrapper key={id}>
+            <Answer
+              className={css`
+                width: 100%;
+              `}
+              text={answer}
+              isIncorrect={correctAnswerId && correctAnswerId !== id}
+              isCorrect={correctAnswerId && correctAnswerId === id}
+              disabled={disabled}
+              onClick={() => {
+                onSubmit(id);
+              }}
+            />
+          </AnswerWrapper>
+        ))}
+      </AnswerList>
+    </Card>
+  </Fragment>
 );
 
 QuestionCard.propTypes = {
@@ -78,7 +80,7 @@ QuestionCard.propTypes = {
 QuestionCard.defaultProps = {
   disabled: false,
   username: '',
-  correctAnswerId: ''
+  correctAnswerId: '',
 };
 
 /**

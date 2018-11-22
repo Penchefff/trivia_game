@@ -5,7 +5,9 @@ import {
   theme as themes,
   injectGlobalStyles,
   Text,
-  Card as BaseCard
+  Card as BaseCard,
+  Button,
+  Spacing
 } from '@sumup/circuit-ui';
 
 import { fetchQuestions } from './QuestionService';
@@ -68,6 +70,26 @@ class App extends Component {
     });
   }
 
+  handleNextQuestion = () => {
+    this.setState(({ questions }) => {
+      if (!questions.length) {
+        return {
+          currentQuestion: null,
+          questions: [],
+          disabled: false,
+          finished: true
+        };
+      }
+
+      const [nextQuestion, ...remainingQuestions] = questions;
+      return {
+        currentQuestion: nextQuestion,
+        questions: remainingQuestions,
+        disabled: false
+      };
+    });
+  };
+
   handleSubmitQuestion = submittedQuestionId => {
     const { currentQuestion } = this.state;
     const isCorrectAnswer = currentQuestion.id === submittedQuestionId;
@@ -76,26 +98,6 @@ class App extends Component {
       score: isCorrectAnswer ? prevState.score + 1 : prevState.score,
       disabled: true
     }));
-
-    setTimeout(() => {
-      this.setState(({ questions }) => {
-        if (!questions.length) {
-          return {
-            currentQuestion: null,
-            questions: [],
-            disabled: false,
-            finished: true
-          };
-        }
-
-        const [nextQuestion, ...remainingQuestions] = questions;
-        return {
-          currentQuestion: nextQuestion,
-          questions: remainingQuestions,
-          disabled: false
-        };
-      });
-    }, 1000);
   };
 
   handleSubmitUsername = username => {
@@ -149,7 +151,10 @@ class App extends Component {
       <ThemeProvider theme={circuit}>
         <Container>
           <Title />
-          {body}
+          <Spacing bottom>{body}</Spacing>
+          <Button disabled={!disabled} primary onClick={this.handleNextQuestion}>
+            {finished ? 'Finish' : 'Next'}
+          </Button>
         </Container>
       </ThemeProvider>
     );
