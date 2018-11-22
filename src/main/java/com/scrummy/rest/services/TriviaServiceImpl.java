@@ -1,5 +1,6 @@
 package com.scrummy.rest.services;
 
+import com.scrummy.rest.config.ScrummyConfig;
 import com.scrummy.rest.models.Question;
 import com.scrummy.rest.repositories.QuestionRepository;
 import java.util.List;
@@ -14,6 +15,6 @@ public class TriviaServiceImpl implements TriviaService {
 
     @Override
     public List<Question> getAllQuestions() {
-        return questionRepository.findAll();
+        return questionRepository.getQuestions(ScrummyConfig.LIMIT);
     }
 }
