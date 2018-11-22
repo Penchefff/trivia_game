@@ -6,6 +6,7 @@
     "@sumup/circuit-ui": "^0.0.12-canary",
     "emotion": "^9.2.12",
     "emotion-theming": "^9.2.9",
+    "faker": "^4.1.0",
     "polished": "^2.3.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
