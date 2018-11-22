@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import styled from 'react-emotion/macro';
 import { ThemeProvider } from 'emotion-theming';
 import { theme as themes, injectGlobalStyles } from '@sumup/circuit-ui';
 
-import { fetchQuestions } from './QuestionService'
+import { fetchQuestions } from './QuestionService';
 import QuestionCard from './components/QuestionCard';
 import WelcomeScreen from './components/WelcomeScreen';
 import Title from './components/Title';
@@ -40,36 +40,83 @@ const Container = styled('section')`
 class App extends Component {
   state = {
     questions: [],
-    currentQuestion: question,
-    username: null
+    username: null,
+    currentQuestion: null,
+    score: 0
   };
 
   async componentDidMount() {
     const [currentQuestion, ...questions] = await fetchQuestions();
-    this.setState({ questions, currentQuestion })
+    this.setState({ questions, currentQuestion });
   }
 
-  RenderPage() {
-    const { currentQuestion, username } = this.state;
-
-    if (!username) {
-        return <WelcomeScreen onSubmit={ this.SetUsername.bind(this) } />
-    } else if (currentQuestion) {
-        currentQuestion.username = username;
-        return <QuestionCard {...currentQuestion} />
+  handleSubmitQuestion = submittedQuestionId => {
+    const { currentQuestion } = this.state;
+    if (currentQuestion.id === submittedQuestionId) {
+      this.setState(prevState => ({
+        score: prevState.score + 1,
+        submittedQuestionId,
+        disabled: true
+      }));
     }
-  }
 
-  SetUsername(username) {
-    this.setState({ username: username });
-  }
+    setTimeout(() => {
+      this.setState(({ questions }) => {
+        if (!questions.length) {
+          return {
+            currentQuestion: null,
+            questions: [],
+            finished: true,
+            submittedQuestionId: null
+          };
+        }
+
+        const [nextQuestion, ...remainingQuestions] = questions;
+        return {
+          currentQuestion: nextQuestion,
+          questions: remainingQuestions,
+          disabled: false,
+          submittedQuestionId: null
+        };
+      });
+    }, 500);
+  };
+
+  handleSubmitUsername = username => {
+    this.setState({ username });
+  };
 
   render() {
+    const {
+      currentQuestion,
+      disabled,
+      score,
+      finished,
+      answeredQuestionId,
+      username
+    } = this.state;
+
+    if (finished) {
+      return <Title>{score}</Title>;
+    }
+
+    const body = username ? (
+      <QuestionCard
+        {...currentQuestion}
+        answeredQuestionId={answeredQuestionId}
+        onSubmit={this.handleSubmitQuestion}
+        disabled={disabled}
+        username={username}
+      />
+    ) : (
+      <WelcomeScreen onSubmit={this.handleSubmitUsername} />
+    );
+
     return (
       <ThemeProvider theme={circuit}>
         <Container>
           <Title />
-            { this.RenderPage() }
+          {body}
         </Container>
       </ThemeProvider>
     );

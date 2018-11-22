@@ -29,9 +29,15 @@ const AnswerWrapper = styled('li')(
 /**
  * Describe QuestionCard here.
  */
-const QuestionCard = ({ question: text, answers, username }) => (
+const QuestionCard = ({
+  question: text,
+  answers,
+  onSubmit,
+  username,
+  disabled
+}) => (
   <Card>
-    <Heading>Let's do this, {username}</Heading>
+    <Heading size={Heading.MEGA}>Lets do this, {username}</Heading>
     <Spacing bottom>
       <Question text={text} />
     </Spacing>
@@ -43,6 +49,10 @@ const QuestionCard = ({ question: text, answers, username }) => (
               width: 100%;
             `}
             text={answer}
+            disabled={disabled}
+            onClick={() => {
+              onSubmit(id);
+            }}
           />
         </AnswerWrapper>
       ))}
@@ -55,10 +65,16 @@ QuestionCard.propTypes = {
    * A consice description of the example prop.
    */
   question: PropTypes.string.isRequired,
-  answers: PropTypes.array.isRequired
+  answers: PropTypes.array.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+  username: PropTypes.string
 };
 
-QuestionCard.defaultProps = {};
+QuestionCard.defaultProps = {
+  disabled: false,
+  username: ''
+};
 
 /**
  * @component
