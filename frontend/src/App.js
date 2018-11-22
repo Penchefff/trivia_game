@@ -69,7 +69,7 @@ class App extends Component {
 
   async componentDidMount() {
     const data = await this.fetchData();
-    this.setState({...data})
+    this.setState({ ...data });
   }
 
   fetchData = async () => {
@@ -86,26 +86,29 @@ class App extends Component {
     };
   };
 
-  handleNextQuestion = () => {
-    this.setState(({ questions, score, username }) => {
-      if (!questions.length) {
-        submitScore({score, username});
+  handleStart = () => {
+    this.setState({ disabled: false, answeredQuestionid: null });
+  };
+
+  handleNextQuestion = (e) => {
+    e.preventDefault();
+    const resetState = {
+        answeredQuestionId: null,
+        disabled: false
+    }
+    this.setState(({ questions }) => {
+      if (questions.length === 0) {
         return {
-          currentQuestion: null,
-          answeredQuestionId: null,
-          questions: [],
-          users: [],
-          disabled: false,
-          gameState: GAME_STATES.FINISHED
-        };
+          ...resetState,
+          gameState: GAME_STATES.FINISHED,
+        }
       }
 
       const [nextQuestion, ...remainingQuestions] = questions;
       return {
+        ...resetState,
         currentQuestion: nextQuestion,
-        answeredQuestionId: null,
         questions: remainingQuestions,
-        disabled: false
       };
     });
   };
@@ -127,28 +130,15 @@ class App extends Component {
     }));
   };
 
-  getButtonText = () => {
-    const { gameState } = this.state;
-
-    const buttonText = {
-      [GAME_STATES.INITIAL]: 'Start',
-      [GAME_STATES.IN_PROGRESS]: 'Next',
-      [GAME_STATES.FINISHED]: 'Start over'
-    };
-
-    return buttonText[gameState];
+  handleStart = e => {
+    e.preventDefault();
+    this.setState({ gameState: GAME_STATES.IN_PROGRESS });
   };
 
-  handleButtonClicked = e => {
+  handleNewGame = async e => {
     e.preventDefault();
-    const { gameState } = this.state;
-    if (gameState === GAME_STATES.IN_PROGRESS) {
-      this.handleNextQuestion();
-    } else if (gameState === GAME_STATES.INITIAL) {
-      this.setState({ gameState: GAME_STATES.IN_PROGRESS });
-    } else if (gameState === GAME_STATES.FINISHED) {
-      this.setState({ gameState: GAME_STATES.INITIAL, score: 0 });
-    }
+    const data = await this.fetchData();
+    this.setState({ ...data, gameState: GAME_STATES.INITIAL, score: 0 });
   };
 
   isButtonDisabled = () => {
@@ -207,14 +197,26 @@ class App extends Component {
         <Container>
           <Title />
           <Spacing bottom>{body}</Spacing>
-          <Button
-            type="button"
-            primary
-            disabled={this.isButtonDisabled()}
-            onClick={this.handleButtonClicked}
-          >
-            {this.getButtonText()}
-          </Button>
+          {gameState === GAME_STATES.IN_PROGRESS && (
+            <Button
+              type="button"
+              primary
+              disabled={this.isButtonDisabled()}
+              onClick={this.handleNextQuestion}
+            >
+              Next question
+            </Button>
+          )}
+          {gameState === GAME_STATES.INITIAL && (
+            <Button type="button" primary onClick={this.handleStart}>
+              Start
+            </Button>
+          )}
+          {gameState === GAME_STATES.FINISHED && (
+            <Button type="button" primary onClick={this.handleNewGame}>
+              New game
+            </Button>
+          )}
         </Container>
       </ThemeProvider>
     );
