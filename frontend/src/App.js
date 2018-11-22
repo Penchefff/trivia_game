@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import styled from 'react-emotion/macro';
-import { css } from 'emotion/macro';
 import { ThemeProvider } from 'emotion-theming';
 import { theme as themes, injectGlobalStyles } from '@sumup/circuit-ui';
 
+import { fetchQuestions } from './QuestionService'
 import QuestionCard from './components/QuestionCard';
 import WelcomeScreen from './components/WelcomeScreen';
 import Title from './components/Title';
@@ -37,30 +37,6 @@ const Container = styled('section')`
   margin: 0 auto;
 `;
 
-const question = {
-  id: 'foobar',
-  question: 'How old are you?',
-  answers: [
-    {
-      id: 1,
-      answer: '1'
-    },
-    {
-      id: 2,
-      answer: '2'
-    },
-    {
-      id: 3,
-      answer: '3'
-    },
-    {
-      id: 4,
-      answer: '4'
-    }
-  ],
-  correctAnswerId: 1
-};
-
 class App extends Component {
   state = {
     questions: [],
@@ -68,10 +44,9 @@ class App extends Component {
     username: null
   };
 
-  componentDidMount() {
-    Promise.resolve([question]).then(([ currentQuestion, ...questions]) => {
-      this.setState({ questions, currentQuestion })
-    })
+  async componentDidMount() {
+    const [currentQuestion, ...questions] = await fetchQuestions();
+    this.setState({ questions, currentQuestion })
   }
 
   RenderPage() {
