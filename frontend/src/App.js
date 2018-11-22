@@ -11,6 +11,7 @@ import {
 } from '@sumup/circuit-ui';
 
 import { fetchQuestions } from './QuestionService';
+import { fetchUsers } from './UserService';
 import QuestionCard from './components/QuestionCard';
 import WelcomeScreen from './components/WelcomeScreen';
 import Title from './components/Title';
@@ -67,15 +68,22 @@ class App extends Component {
   };
 
   async componentDidMount() {
-    const [currentQuestion, ...questions] = await fetchQuestions(
-      this.totalQuestions
-    );
+    this.resetData();
+  }
+
+  resetData = async () => {
+    const [users, [currentQuestion, ...questions]] = await Promise.all([
+      fetchUsers(),
+      fetchQuestions(this.totalQuestions)
+    ]);
+
     this.setState({
-      questions,
+      users,
       currentQuestion,
+      questions,
       totalQuestions: questions.length + 1
     });
-  }
+  };
 
   handleNextQuestion = () => {
     this.setState(({ questions }) => {
@@ -153,7 +161,8 @@ class App extends Component {
       answeredQuestionId,
       totalQuestions,
       username,
-      gameState
+      gameState,
+      users
     } = this.state;
 
     let body;
@@ -185,6 +194,7 @@ class App extends Component {
         <WelcomeScreen
           onChangeUsername={this.handleChangeUsername}
           username={username}
+          users={users}
         />
       );
     }

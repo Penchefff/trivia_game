@@ -25,7 +25,7 @@ const TopPlayers = ({ data }) => (
         minWidth={400}
         minRows={2}
         data={data}
-        filterable={true}
+        filterable={false}
         columns={columns}
         showPagination={false}
         showPageJump={false}

@@ -1,6 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Input, Heading, Card } from '@sumup/circuit-ui';
+import { Input, Heading, Card, Spacing } from '@sumup/circuit-ui';
+
+import TopPlayers from '../TopPlayers';
 
 /**
  * Describe WelcomeScreen here.
@@ -8,30 +10,37 @@ import { Input, Heading, Card } from '@sumup/circuit-ui';
 class WelcomeScreen extends Component {
   static propTypes = {
     onChangeUsername: PropTypes.func,
-    username: PropTypes.string
+    username: PropTypes.string,
+    users: PropTypes.array
   };
 
   static defaultProps = {
     onChangeUsername: e => {
       e.preventDefault();
     },
-    username: ''
+    username: '',
+    users: []
   };
 
   render() {
     return (
-      <Card>
-        <Heading align="center">
-          Nice to have you here, how about you tell me who you are?
-        </Heading>
-        <Input
-          name="username"
-          autoComplete="off"
-          type="text"
-          onChange={this.props.onChangeUsername}
-          value={this.props.username}
-        />
-      </Card>
+      <Fragment>
+        <Spacing bottom>
+          <Card>
+            <Heading align="center">
+              Nice to have you here, how about you tell me who you are?
+            </Heading>
+            <Input
+              name="username"
+              autoComplete="off"
+              type="text"
+              onChange={this.props.onChangeUsername}
+              value={this.props.username}
+            />
+          </Card>
+        </Spacing>
+        <TopPlayers data={this.props.users} />
+      </Fragment>
     );
   }
 }
