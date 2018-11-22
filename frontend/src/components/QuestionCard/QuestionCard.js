@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Card as BaseCard, Spacing } from '@sumup/circuit-ui';
+import { Card as BaseCard, Spacing, Heading } from '@sumup/circuit-ui';
 import styled, { css } from 'react-emotion';
 
 import Question from '../Question';
@@ -29,8 +29,9 @@ const AnswerWrapper = styled('li')(
 /**
  * Describe QuestionCard here.
  */
-const QuestionCard = ({ question: text, answers }) => (
+const QuestionCard = ({ question: text, answers, username }) => (
   <Card>
+    <Heading>Let's do this, {username}</Heading>
     <Spacing bottom>
       <Question text={text} />
     </Spacing>

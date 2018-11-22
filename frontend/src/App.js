@@ -5,6 +5,7 @@ import { ThemeProvider } from 'emotion-theming';
 import { theme as themes, injectGlobalStyles } from '@sumup/circuit-ui';
 
 import QuestionCard from './components/QuestionCard';
+import WelcomeScreen from './components/WelcomeScreen';
 import Title from './components/Title';
 
 const { circuit } = themes;
@@ -63,7 +64,8 @@ const question = {
 class App extends Component {
   state = {
     questions: [],
-    currentQuestion: null
+    currentQuestion: question,
+    username: null
   };
 
   componentDidMount() {
@@ -72,18 +74,27 @@ class App extends Component {
     })
   }
 
-  render() {
-    const { currentQuestion } = this.state;
+  RenderPage() {
+    const { currentQuestion, username } = this.state;
 
-    if (!currentQuestion) {
-      return null;
+    if (!username) {
+        return <WelcomeScreen onSubmit={ this.SetUsername.bind(this) } />
+    } else if (currentQuestion) {
+        currentQuestion.username = username;
+        return <QuestionCard {...currentQuestion} />
     }
+  }
 
+  SetUsername(username) {
+    this.setState({ username: username });
+  }
+
+  render() {
     return (
       <ThemeProvider theme={circuit}>
         <Container>
           <Title />
-          <QuestionCard {...currentQuestion} />
+            { this.RenderPage() }
         </Container>
       </ThemeProvider>
     );
